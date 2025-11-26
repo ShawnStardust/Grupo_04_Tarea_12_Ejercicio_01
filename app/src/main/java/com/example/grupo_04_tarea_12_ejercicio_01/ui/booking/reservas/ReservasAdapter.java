@@ -15,7 +15,10 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
-public class ReservasAdapter extends RecyclerView.Adapter<ReservasAdapter.ReservaViewHolder> {
+public class ReservasAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private static final int TYPE_ITEM = 0;
+    private static final int TYPE_FOOTER = 1;
 
     private List<Reserva> reservasList;
     private OnReservaClickListener editListener;
@@ -35,45 +38,83 @@ public class ReservasAdapter extends RecyclerView.Adapter<ReservasAdapter.Reserv
         this.dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
     }
 
+    // -------------------------------------------------------------------------
+    // VIEW TYPES
+    // -------------------------------------------------------------------------
+    @Override
+    public int getItemViewType(int position) {
+        if (position == reservasList.size()) {
+            return TYPE_FOOTER;
+        }
+        return TYPE_ITEM;
+    }
+
+    // -------------------------------------------------------------------------
+    // CREATE VIEW HOLDERS
+    // -------------------------------------------------------------------------
     @NonNull
     @Override
-    public ReservaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+        if (viewType == TYPE_FOOTER) {
+            // Footer vacío de 200dp
+            View view = new View(parent.getContext());
+            view.setLayoutParams(new RecyclerView.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    600   // <- altura del espacio extra
+            ));
+            return new FooterViewHolder(view);
+        }
+
+        // Ítem normal
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_reserva, parent, false);
         return new ReservaViewHolder(view);
     }
 
+    // -------------------------------------------------------------------------
+    // BIND VIEW HOLDERS
+    // -------------------------------------------------------------------------
     @Override
-    public void onBindViewHolder(@NonNull ReservaViewHolder holder, int position) {
-        Reserva reserva = reservasList.get(position);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-        holder.tvReservaId.setText("Reserva #" + reserva.getIdReserva());
-        holder.tvReservaFecha.setText(dateFormat.format(reserva.getFecha()));
-        holder.tvReservaInfo.setText("Pasajero ID: " + reserva.getIdPasajero() +
+        if (getItemViewType(position) == TYPE_FOOTER) {
+            return; // footer no tiene nada
+        }
+
+        Reserva reserva = reservasList.get(position);
+        ReservaViewHolder vh = (ReservaViewHolder) holder;
+
+        vh.tvReservaId.setText("Reserva #" + reserva.getIdReserva());
+        vh.tvReservaFecha.setText(dateFormat.format(reserva.getFecha()));
+        vh.tvReservaInfo.setText("Pasajero ID: " + reserva.getIdPasajero() +
                 " | Vuelo ID: " + reserva.getIdVuelo());
-        holder.tvReservaCosto.setText(String.format(Locale.getDefault(),
+        vh.tvReservaCosto.setText(String.format(Locale.getDefault(),
                 "Costo: $%.2f", reserva.getCosto()));
-        holder.tvReservaObservacion.setText(reserva.getObservacion() != null ?
+        vh.tvReservaObservacion.setText(reserva.getObservacion() != null ?
                 reserva.getObservacion() : "Sin observaciones");
 
-        holder.btnEditReserva.setOnClickListener(v -> {
-            if (editListener != null) {
-                editListener.onClick(reserva);
-            }
+        vh.btnEditReserva.setOnClickListener(v -> {
+            if (editListener != null) editListener.onClick(reserva);
         });
 
-        holder.btnDeleteReserva.setOnClickListener(v -> {
-            if (deleteListener != null) {
-                deleteListener.onClick(reserva);
-            }
+        vh.btnDeleteReserva.setOnClickListener(v -> {
+            if (deleteListener != null) deleteListener.onClick(reserva);
         });
     }
 
+    // -------------------------------------------------------------------------
+    // ITEM COUNT
+    // -------------------------------------------------------------------------
     @Override
     public int getItemCount() {
-        return reservasList.size();
+        // +1 por el footer
+        return reservasList.size() + 1;
     }
 
+    // -------------------------------------------------------------------------
+    // VIEW HOLDERS
+    // -------------------------------------------------------------------------
     static class ReservaViewHolder extends RecyclerView.ViewHolder {
         TextView tvReservaId;
         TextView tvReservaFecha;
@@ -92,6 +133,12 @@ public class ReservasAdapter extends RecyclerView.Adapter<ReservasAdapter.Reserv
             tvReservaObservacion = itemView.findViewById(R.id.tvReservaObservacion);
             btnEditReserva = itemView.findViewById(R.id.btnEditReserva);
             btnDeleteReserva = itemView.findViewById(R.id.btnDeleteReserva);
+        }
+    }
+
+    static class FooterViewHolder extends RecyclerView.ViewHolder {
+        public FooterViewHolder(@NonNull View itemView) {
+            super(itemView);
         }
     }
 }

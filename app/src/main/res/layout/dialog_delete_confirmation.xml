@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Layout opcional para un diálogo de confirmación personalizado -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@android:color/white">
+
+    <!-- Icono de advertencia -->
+    <ImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@android:drawable/ic_dialog_alert"
+        android:tint="#F44336"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Título -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Eliminar Reserva"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Mensaje -->
+    <TextView
+        android:id="@+id/tvDeleteMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="¿Está seguro que desea eliminar esta reserva?"
+        android:textSize="16sp"
+        android:textColor="#666666"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Información de la reserva a eliminar -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="#FFF3E0"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/tvDeleteReservaId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reserva #123"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#E65100"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/tvDeleteReservaDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pasajero: 1 | Vuelo: 1 | Fecha: 01/01/2024"
+                android:textSize="12sp"
+                android:textColor="#666666"/>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Botones -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btnCancelarDelete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cancelar"
+            android:textSize="14sp"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/btnConfirmarDelete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Eliminar"
+            android:textSize="14sp"
+            android:backgroundTint="#F44336"/>
+
+    </LinearLayout>
+
+</LinearLayout>

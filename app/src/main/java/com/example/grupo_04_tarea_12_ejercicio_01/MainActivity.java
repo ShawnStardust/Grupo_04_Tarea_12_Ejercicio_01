@@ -1,6 +1,7 @@
 package com.example.grupo_04_tarea_12_ejercicio_01;
 
 import android.os.Bundle;
+import android.view.View; // Importante para View.GONE / View.VISIBLE
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -75,5 +76,13 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragmentContainer, fragment);
         transaction.commit();
+    }
+
+    // --- NUEVO MÉTODO AGREGADO ---
+    // Permite ocultar o mostrar el menú desde los Fragments
+    public void setBottomNavVisibility(boolean isVisible) {
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        }
     }
 }

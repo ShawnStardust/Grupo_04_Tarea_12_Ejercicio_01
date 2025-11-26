@@ -8,10 +8,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton; // Importar ImageButton
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import com.example.grupo_04_tarea_12_ejercicio_01.MainActivity; // Importar MainActivity
 import com.example.grupo_04_tarea_12_ejercicio_01.R;
 import com.example.grupo_04_tarea_12_ejercicio_01.domain.model.Reserva;
 
@@ -27,6 +29,7 @@ public class ReservasListFragment extends Fragment {
     private RecyclerView recyclerViewReservas;
     private TextView tvEmptyReservas;
     private FloatingActionButton fabAddReserva;
+    private ImageButton btnBack; // Referencia al botón
     private ReservasAdapter adapter;
     private List<Reserva> reservasList;
 
@@ -46,6 +49,13 @@ public class ReservasListFragment extends Fragment {
         recyclerViewReservas = view.findViewById(R.id.recyclerViewReservas);
         tvEmptyReservas = view.findViewById(R.id.tvEmptyReservas);
         fabAddReserva = view.findViewById(R.id.fabAddReserva);
+        btnBack = view.findViewById(R.id.btnBack); // Inicializar botón
+
+        // --- LÓGICA DEL BOTÓN ATRÁS ---
+        btnBack.setOnClickListener(v -> {
+            // Regresa al fragmento anterior (BookingFragment)
+            getParentFragmentManager().popBackStack();
+        });
 
         // Configurar RecyclerView
         recyclerViewReservas.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -62,15 +72,35 @@ public class ReservasListFragment extends Fragment {
         return view;
     }
 
+    // --- MANEJO DE LA BARRA DE NAVEGACIÓN ---
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Cuando el fragmento es visible, ocultamos el Bottom Navigation
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(false);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Cuando salimos de este fragmento (volvemos atrás), mostramos el Bottom Navigation
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(true);
+        }
+    }
+
+    // ... (El resto de tus métodos observeViewModel, openReservaForm, etc. se mantienen igual) ...
+
     private void observeViewModel() {
-        // Observar lista de reservas
         viewModel.reservasLiveData.observe(getViewLifecycleOwner(), reservas -> {
             if (reservas != null) {
                 reservasList.clear();
                 reservasList.addAll(reservas);
                 adapter.notifyDataSetChanged();
 
-                // Mostrar mensaje si está vacío
                 if (reservasList.isEmpty()) {
                     recyclerViewReservas.setVisibility(View.GONE);
                     tvEmptyReservas.setVisibility(View.VISIBLE);
@@ -81,17 +111,6 @@ public class ReservasListFragment extends Fragment {
             }
         });
 
-        // Observar estado de carga
-        viewModel.isLoadingLiveData.observe(getViewLifecycleOwner(), isLoading -> {
-            // Aquí puedes mostrar/ocultar un ProgressBar si lo tienes
-            if (isLoading != null && isLoading) {
-                // Mostrar loading
-            } else {
-                // Ocultar loading
-            }
-        });
-
-        // Observar errores
         viewModel.errorLiveData.observe(getViewLifecycleOwner(), error -> {
             if (error != null && !error.isEmpty()) {
                 Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
@@ -100,9 +119,11 @@ public class ReservasListFragment extends Fragment {
     }
 
     private void openReservaForm(Reserva reserva) {
-        // Aquí abrirías un dialog o fragment para crear/editar
-        // Por ahora solo recargaremos la lista
-        viewModel.loadReservas();
+        ReservaFormDialogFragment dialog = ReservaFormDialogFragment.newInstance(reserva);
+        dialog.setListener(reservaGuardada -> {
+            viewModel.saveReserva(reservaGuardada);
+        });
+        dialog.show(getChildFragmentManager(), "ReservaFormDialog");
     }
 
     private void onEditReserva(Reserva reserva) {
@@ -110,6 +131,10 @@ public class ReservasListFragment extends Fragment {
     }
 
     private void onDeleteReserva(Reserva reserva) {
-        viewModel.deleteReserva(reserva);
+        DeleteConfirmationDialogFragment dialog = DeleteConfirmationDialogFragment.newInstance(reserva);
+        dialog.setListener(reservaAEliminar -> {
+            viewModel.deleteReserva(reservaAEliminar);
+        });
+        dialog.show(getChildFragmentManager(), "DeleteConfirmDialog");
     }
 }

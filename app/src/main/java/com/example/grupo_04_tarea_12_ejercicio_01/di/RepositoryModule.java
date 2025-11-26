@@ -1,5 +1,6 @@
 package com.example.grupo_04_tarea_12_ejercicio_01.di;
 
+import com.example.grupo_04_tarea_12_ejercicio_01.data.mock.FakeReservaRepositoryImpl;
 import com.example.grupo_04_tarea_12_ejercicio_01.data.repository.*;
 import com.example.grupo_04_tarea_12_ejercicio_01.domain.Repository.*;
 
@@ -29,7 +30,7 @@ public abstract class RepositoryModule {
     @Binds
     @Singleton
     public abstract ReservaRepository bindReservaRepository(
-            ReservaRepositoryImpl reservaRepositoryImpl
+            FakeReservaRepositoryImpl reservaRepositoryImpl
     );
 
     @Binds
