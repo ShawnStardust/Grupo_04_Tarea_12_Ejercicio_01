@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/nav_booking"
+        android:icon="@android:drawable/ic_menu_today"
+        android:title="Booking"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/nav_vuelos"
+        android:icon="@android:drawable/ic_menu_directions"
+        android:title="Vuelos"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/nav_flota"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Flota"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/nav_clientes"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="Clientes"
+        app:showAsAction="ifRoom" />
+</menu>
