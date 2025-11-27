@@ -8,8 +8,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.grupo_04_tarea_12_ejercicio_01.MainActivity;
+import com.example.grupo_04_tarea_12_ejercicio_01.ui.booking.reservas.ReservaFormDialogFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.example.grupo_04_tarea_12_ejercicio_01.R;
@@ -27,11 +31,11 @@ public class PagosListFragment extends Fragment {
     private RecyclerView recyclerViewPagos;
     private TextView tvEmptyPagos;
     private FloatingActionButton fabAddPago;
+    private ImageButton btnBack;
     private PagosAdapter adapter;
     private List<Pago> pagosList;
 
     public PagosListFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -39,38 +43,49 @@ public class PagosListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pagos_list, container, false);
 
-        // Inicializar ViewModel
         viewModel = new ViewModelProvider(this).get(PagosViewModel.class);
-
-        // Inicializar vistas
         recyclerViewPagos = view.findViewById(R.id.recyclerViewPagos);
         tvEmptyPagos = view.findViewById(R.id.tvEmptyPagos);
         fabAddPago = view.findViewById(R.id.fabAddPago);
+        btnBack = view.findViewById(R.id.btnBack);
 
-        // Configurar RecyclerView
+        btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+
         recyclerViewPagos.setLayoutManager(new LinearLayoutManager(getContext()));
         pagosList = new ArrayList<>();
         adapter = new PagosAdapter(pagosList, this::onEditPago, this::onDeletePago);
         recyclerViewPagos.setAdapter(adapter);
 
-        // Configurar FAB
         fabAddPago.setOnClickListener(v -> openPagoForm(null));
 
-        // Observar LiveData
         observeViewModel();
 
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(false);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(true);
+        }
+    }
+
     private void observeViewModel() {
-        // Observar lista de pagos
         viewModel.pagosLiveData.observe(getViewLifecycleOwner(), pagos -> {
             if (pagos != null) {
                 pagosList.clear();
                 pagosList.addAll(pagos);
                 adapter.notifyDataSetChanged();
 
-                // Mostrar mensaje si está vacío
                 if (pagosList.isEmpty()) {
                     recyclerViewPagos.setVisibility(View.GONE);
                     tvEmptyPagos.setVisibility(View.VISIBLE);
@@ -81,17 +96,6 @@ public class PagosListFragment extends Fragment {
             }
         });
 
-        // Observar estado de carga
-        viewModel.isLoadingLiveData.observe(getViewLifecycleOwner(), isLoading -> {
-            // Aquí puedes mostrar/ocultar un ProgressBar si lo tienes
-            if (isLoading != null && isLoading) {
-                // Mostrar loading
-            } else {
-                // Ocultar loading
-            }
-        });
-
-        // Observar errores
         viewModel.errorLiveData.observe(getViewLifecycleOwner(), error -> {
             if (error != null && !error.isEmpty()) {
                 Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
@@ -100,9 +104,11 @@ public class PagosListFragment extends Fragment {
     }
 
     private void openPagoForm(Pago pago) {
-        // Aquí abrirías un dialog o fragment para crear/editar
-        // Por ahora solo recargaremos la lista
-        viewModel.loadPagos();
+        PagoFormDialogFragment dialog = PagoFormDialogFragment.newInstance(pago);
+        dialog.setListener(pagoGuardado -> {
+            viewModel.savePago(pagoGuardado);
+        });
+        dialog.show(getChildFragmentManager(), "PagoFormDialog");
     }
 
     private void onEditPago(Pago pago) {
@@ -110,6 +116,13 @@ public class PagosListFragment extends Fragment {
     }
 
     private void onDeletePago(Pago pago) {
-        viewModel.deletePago(pago);
+        PagoDeleteConfirmationDialogFragment dialog =
+                PagoDeleteConfirmationDialogFragment.newInstance(pago);
+
+        dialog.setListener(pagoAEliminar -> {
+            viewModel.deletePago(pagoAEliminar);
+        });
+
+        dialog.show(getChildFragmentManager(), "DeleteConfirmDialog");
     }
 }

@@ -35,7 +35,6 @@ public class ReservaFormDialogFragment extends DialogFragment {
     private final Calendar calendar = Calendar.getInstance();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
-    // Interfaz para comunicar el resultado al Fragmento padre
     public interface OnReservaSavedListener {
         void onReservaSaved(Reserva reserva);
     }
@@ -47,8 +46,6 @@ public class ReservaFormDialogFragment extends DialogFragment {
     public static ReservaFormDialogFragment newInstance(Reserva reserva) {
         ReservaFormDialogFragment fragment = new ReservaFormDialogFragment();
         if (reserva != null) {
-            // Si pasamos una reserva, es modo EDICIÓN, la guardamos temporalmente
-            // En una app real, es mejor pasar los datos vía Bundle/Arguments
             fragment.reservaActual = reserva;
         }
         return fragment;
@@ -57,7 +54,6 @@ public class ReservaFormDialogFragment extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        // Hacer que el dialog sea más ancho
         Dialog dialog = getDialog();
         if (dialog != null) {
             int width = ViewGroup.LayoutParams.MATCH_PARENT;

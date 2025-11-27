@@ -1,4 +1,4 @@
-package com.example.grupo_04_tarea_12_ejercicio_01.ui.booking.reservas;
+package com.example.grupo_04_tarea_12_ejercicio_01.ui.booking.pagos;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -13,23 +13,23 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.grupo_04_tarea_12_ejercicio_01.R;
-import com.example.grupo_04_tarea_12_ejercicio_01.domain.model.Reserva;
+import com.example.grupo_04_tarea_12_ejercicio_01.domain.model.Pago;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public class DeleteConfirmationDialogFragment extends DialogFragment {
+public class PagoDeleteConfirmationDialogFragment extends DialogFragment {
 
-    private Reserva reserva;
+    private Pago pago;
     private OnDeleteConfirmedListener listener;
 
     public interface OnDeleteConfirmedListener {
-        void onDeleteConfirmed(Reserva reserva);
+        void onDeleteConfirmed(Pago pago);
     }
 
-    public static DeleteConfirmationDialogFragment newInstance(Reserva reserva) {
-        DeleteConfirmationDialogFragment fragment = new DeleteConfirmationDialogFragment();
-        fragment.reserva = reserva;
+    public static PagoDeleteConfirmationDialogFragment newInstance(Pago pago) {
+        PagoDeleteConfirmationDialogFragment fragment = new PagoDeleteConfirmationDialogFragment();
+        fragment.pago = pago;
         return fragment;
     }
 
@@ -43,7 +43,6 @@ public class DeleteConfirmationDialogFragment extends DialogFragment {
         Dialog dialog = getDialog();
         if (dialog != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            // Hacer el fondo transparente para que se vean las esquinas redondeadas del CardView/Layout si las tiene
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
     }
@@ -51,25 +50,33 @@ public class DeleteConfirmationDialogFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_delete_confirmation, container, false); // Asegúrate del nombre
+        return inflater.inflate(R.layout.dialog_pago_delete_confirmation, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TextView tvId = view.findViewById(R.id.tvDeleteReservaId);
-        TextView tvDetails = view.findViewById(R.id.tvDeleteReservaDetails);
+        TextView tvId = view.findViewById(R.id.tvDeletePagoId);
+        TextView tvDetails = view.findViewById(R.id.tvDeletePagoDetails);
         Button btnConfirmar = view.findViewById(R.id.btnConfirmarDelete);
         Button btnCancelar = view.findViewById(R.id.btnCancelarDelete);
 
-        if (reserva != null) {
-            tvId.setText("Reserva #" + reserva.getIdReserva());
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-            String fechaStr = reserva.getFecha() != null ? sdf.format(reserva.getFecha()) : "N/A";
+        if (pago != null) {
+            tvId.setText("Pago #" + pago.getIdPago());
 
-            String detalle = String.format("Pasajero: %d | Vuelo: %d\nFecha: %s | Costo: $%.2f",
-                    reserva.getIdPasajero(), reserva.getIdVuelo(), fechaStr, reserva.getCosto());
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            String fechaStr = pago.getFecha() != null ? sdf.format(pago.getFecha()) : "N/A";
+
+            String detalle = String.format(
+                    "Comprobante: %s - %s\nFecha: %s | Monto: $%.2f",
+                    pago.getTipoComprobante(),
+                    pago.getNumComprobante(),
+                    fechaStr,
+                    pago.getMonto()
+            );
+
+
             tvDetails.setText(detalle);
         }
 
@@ -77,7 +84,7 @@ public class DeleteConfirmationDialogFragment extends DialogFragment {
 
         btnConfirmar.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onDeleteConfirmed(reserva);
+                listener.onDeleteConfirmed(pago);
             }
             dismiss();
         });

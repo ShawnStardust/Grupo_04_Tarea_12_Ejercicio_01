@@ -38,9 +38,6 @@ public class ReservasAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
     }
 
-    // -------------------------------------------------------------------------
-    // VIEW TYPES
-    // -------------------------------------------------------------------------
     @Override
     public int getItemViewType(int position) {
         if (position == reservasList.size()) {
@@ -49,37 +46,29 @@ public class ReservasAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return TYPE_ITEM;
     }
 
-    // -------------------------------------------------------------------------
-    // CREATE VIEW HOLDERS
-    // -------------------------------------------------------------------------
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         if (viewType == TYPE_FOOTER) {
-            // Footer vacío de 200dp
             View view = new View(parent.getContext());
             view.setLayoutParams(new RecyclerView.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    600   // <- altura del espacio extra
+                    600
             ));
             return new FooterViewHolder(view);
         }
 
-        // Ítem normal
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_reserva, parent, false);
         return new ReservaViewHolder(view);
     }
 
-    // -------------------------------------------------------------------------
-    // BIND VIEW HOLDERS
-    // -------------------------------------------------------------------------
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
         if (getItemViewType(position) == TYPE_FOOTER) {
-            return; // footer no tiene nada
+            return;
         }
 
         Reserva reserva = reservasList.get(position);
@@ -103,18 +92,11 @@ public class ReservasAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         });
     }
 
-    // -------------------------------------------------------------------------
-    // ITEM COUNT
-    // -------------------------------------------------------------------------
     @Override
     public int getItemCount() {
-        // +1 por el footer
         return reservasList.size() + 1;
     }
 
-    // -------------------------------------------------------------------------
-    // VIEW HOLDERS
-    // -------------------------------------------------------------------------
     static class ReservaViewHolder extends RecyclerView.ViewHolder {
         TextView tvReservaId;
         TextView tvReservaFecha;
